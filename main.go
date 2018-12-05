@@ -1,8 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"flag"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"time"
@@ -25,6 +26,13 @@ func newPool(addr string) *redis.Pool {
 	}
 }
 
+func logPanic(err error, msg string) {
+	if err != nil {
+		log.Printf("ERROR: %v %s", err, msg)
+		panic(err)
+	}
+}
+
 // Set up environment
 func init() {
 	LOCAL = os.Getenv("local")
@@ -33,23 +41,37 @@ func init() {
 
 func main() {
 	flag.Parse()
-	reader := bufio.NewReader(os.Stdin)
-	log.Printf("Redis command: %s %s %s", "SRANDMEMBER", flag.Args()[0], flag.Args()[1])
-	log.Print("Is that OKAY? [Y/N] ")
-	resp, _ := reader.ReadString('\n')
-	switch resp {
-	case "Y":
-		conn := POOL.Get()
-		defer conn.Close()
-		data, _ := redis.Strings(conn.Do("SRANDMEMBER", flag.Args()[0], flag.Args()[1]))
-		for _, u := range data {
-			log.Println(u)
+	argAmnt := len(flag.Args())
+	if argAmnt == 2 {
+		log.Printf("Redis command: %s %s %s", "SRANDMEMBER", flag.Args()[0], flag.Args()[1])
+		log.Print("Is that OKAY? [y/n] ")
+		var resp string
+		fmt.Scanln(&resp)
+		log.Printf("You chose: %s", resp)
+		switch resp {
+		case "Y":
+			conn := POOL.Get()
+			defer conn.Close()
+			data, _ := redis.Strings(conn.Do("SRANDMEMBER", flag.Args()[0], flag.Args()[1]))
+			// string for appending all the values
+			res := ""
+			// print and build string for saving
+			for _, u := range data {
+				log.Println(u)
+				res += u + "\n"
+			}
+			// write the whole body at once
+			err := ioutil.WriteFile(flag.Args()[0]+".txt", []byte(res), 0777)
+			logPanic(err, "Writing file")
+			log.Println("Operation completed.")
+		case "N":
+			break
+		default:
+			log.Print("Only [y/n] allowed")
+			break
 		}
-	case "N":
-		break
-	default:
-		log.Print("Only [Y/N] allowed")
-		break
+	} else {
+		log.Print("Available operations:")
+		log.Print("./gredo {SET_IDENTIFIER} {AMOUNT}")
 	}
-
 }
