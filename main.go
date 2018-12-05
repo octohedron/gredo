@@ -49,7 +49,7 @@ func main() {
 		fmt.Scanln(&resp)
 		log.Printf("You chose: %s", resp)
 		switch resp {
-		case "Y":
+		case "y":
 			conn := POOL.Get()
 			defer conn.Close()
 			data, _ := redis.Strings(conn.Do("SRANDMEMBER", flag.Args()[0], flag.Args()[1]))
@@ -64,7 +64,7 @@ func main() {
 			err := ioutil.WriteFile(flag.Args()[0]+".txt", []byte(res), 0777)
 			logPanic(err, "Writing file")
 			log.Println("Operation completed.")
-		case "N":
+		case "n":
 			break
 		default:
 			log.Print("Only [y/n] allowed")
