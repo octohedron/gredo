@@ -57,13 +57,12 @@ func main() {
 			res := ""
 			// print and build string for saving
 			for _, u := range data {
-				log.Println(u)
 				res += u + "\n"
 			}
 			// write the whole body at once
 			err := ioutil.WriteFile(flag.Args()[0]+".txt", []byte(res), 0777)
 			logPanic(err, "Writing file")
-			log.Println("Operation completed.")
+			log.Printf("Operation completed. Exported %d items", len(data))
 		case "n":
 			break
 		default:
