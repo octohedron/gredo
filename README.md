@@ -12,7 +12,7 @@ To dump 30 random members of `my_set` to a file called `my_set.txt`
 $ go build && ./gredo dump my_set 30
 ```
 
-To load up to 30 items in a file called `my_set.txt` in the same directory
+To load **up to** 30 items in a file called `my_set.txt` in the same directory
 ```
 $ go build && ./gredo load my_set 30
 ```

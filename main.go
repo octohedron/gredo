@@ -13,11 +13,8 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-// POOL is a declared a global variable to store the Redis connection pool.
+// POOL is a global variable to store the Redis connection pool.
 var POOL *redis.Pool
-
-// LOCAL is an environment handler
-var LOCAL = "host-local"
 
 // Redis pool
 func newPool(addr string) *redis.Pool {
@@ -41,9 +38,8 @@ func logErr(err error, msg string) {
 	}
 }
 
-// Set up environment
+// Set up redis connection pool
 func init() {
-	LOCAL = os.Getenv("local")
 	POOL = newPool("127.0.0.1:6379")
 }
 
