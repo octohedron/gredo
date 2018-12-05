@@ -1,16 +1,23 @@
 # GREDO
-### Go redis exporter
+### Go redis set exporter / importer
+
 Only `SRANDMEMBER` is supported at the moment
 
 TLDR: `go build && ./gredo {dump|load} {SET_IDENTIFIER} {AMOUNT}`
 
-Example
+### Examples
+
+To dump 30 random members of `my_set` to a file called `my_set.txt`
 ```
 $ go build && ./gredo dump my_set 30
 ```
 
-Will dump 30 random members of `my_set` to a file called `my_set.txt`
+To load up to 30 items in a file called `my_set.txt` in the same directory
+```
+$ go build && ./gredo load my_set 30
+```
 
 Notes
-+ Be careful, it will overwrite the previous file, i.e. `my_set.txt`
-+ For now it only connects to redis in `localhost:6379`
++ When dumping it will overwrite the previous file, i.e. `my_set.txt`
++ It only connects to redis in `localhost:6379`
++ Loads/Dumps more than 10K items in less than a second, probably a lot more
