@@ -40,7 +40,7 @@ func logErr(err error, msg string) {
 
 // Set up redis connection pool
 func init() {
-	POOL = newPool("127.0.0.1:6379")
+	POOL = newPool("172.19.0.2:6379")
 }
 
 // dump is a func to dump random members of a redis set to a file
@@ -89,9 +89,8 @@ func load(setID string, amount string) {
 		s := scanner.Text()
 		ok, err := redis.Bool(conn.Do("SADD", setID, s))
 		logErr(err, "ERROR ADDING TO REDIS SET")
-		if ok {
-			amountAdded++
-		} else {
+		amountAdded++
+		if !ok {
 			duplicates++
 		}
 		// only load amount specified
@@ -99,7 +98,8 @@ func load(setID string, amount string) {
 			break
 		}
 	}
-	log.Printf("Loaded %d items to set %s DUPLICATES: %d", amountAdded, setID, duplicates)
+	log.Printf(
+		"Loaded %d items to set %s DUPLICATES: %d", amountAdded, setID, duplicates)
 	log.Printf("Operation completed.")
 }
 
